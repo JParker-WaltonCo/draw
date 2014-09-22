@@ -1,5 +1,5 @@
 module.exports = function(hostname) {
-    var production = (hostname === 'atlregional.github.io/draw/');
+    var production = (hostname === 'atlregional.github.io');
 
     return {
         client_id: production ?
