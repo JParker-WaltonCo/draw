@@ -49,7 +49,7 @@ $.getJSON('map.geojson', function(geojson) {
     if (bounds.isValid()) {
         map.fitBounds(geojsonLayer.getBounds());
     } else {
-        map.setView([0, 0], 2);
+        map.setView([33.9684201, -83.86962], 9);
     }
     geojsonLayer.eachLayer(function(l) {
         showProperties(l);

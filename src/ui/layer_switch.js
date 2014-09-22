@@ -4,7 +4,7 @@ module.exports = function(context) {
 
         var layers = [{
             title: 'Mapbox',
-            layer: L.mapbox.tileLayer('tmcw.map-7s15q36b', {
+            layer: L.mapbox.tileLayer('atlregional.i86o780c', {
                 detectRetina: true
             })
         }, {
@@ -18,7 +18,10 @@ module.exports = function(context) {
                 attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             })
         }];
-
+        L.control.layers({},{
+            'Cities': L.mapbox.tileLayer('atlregional.7gvw8kt9'),
+            'LCI Areas': L.mapbox.tileLayer('atlregional.o3hj8aor')
+        }).addTo(context.map);
         var layerSwap = function(d) {
             var clicked = this instanceof d3.selection ? this.node() : this;
             layerButtons.classed('active', function() {

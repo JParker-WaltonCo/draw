@@ -8,16 +8,17 @@ module.exports = function(context, pane) {
         var mode = null;
 
         var buttonData = [{
-            icon: 'code',
-            title: ' JSON',
-            alt: 'JSON Source',
-            behavior: json
-        }, {
             icon: 'table',
             title: ' Table',
             alt: 'Edit feature properties in a table',
             behavior: table
         }, {
+            icon: 'code',
+            title: ' JSON',
+            alt: 'JSON Source',
+            behavior: json
+        }, {
+            
             icon: 'question',
             title: ' Help',
             alt: 'Help',
@@ -44,6 +45,7 @@ module.exports = function(context, pane) {
             buttons.classed('active', function(_) { return d.icon == _.icon; });
             if (mode) mode.off();
             mode = d.behavior(context);
+            console.log(mode)
             pane.call(mode);
         }
     };
