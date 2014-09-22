@@ -15639,7 +15639,7 @@ function extend() {
 
 },{}],121:[function(require,module,exports){
 module.exports = function(hostname) {
-    var production = (hostname + pathname === 'atlregional.github.io/draw/');
+    var production = (hostname === 'atlregional.github.io/draw/');
 
     return {
         client_id: production ?
