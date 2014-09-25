@@ -15740,10 +15740,13 @@ module.exports = function(context) {
             _data[k] = (typeof obj[k] === 'object') ? clone(obj[k], false) : obj[k];
         }
         if (obj.dirty !== false) data.dirty = true;
+        console.log(src)
+        console.log(obj)
         context.dispatch.change({
             obj: obj,
             source: src
         });
+        console.log(data.get('map'))
         return data;
     };
 
@@ -15786,7 +15789,7 @@ module.exports = function(context) {
 
     data.fetch = function(q, cb) {
         var type = q.id.split(':')[0];
-
+        console.log(q)
         switch(type) {
             case 'gist':
                 var id = q.id.split(':')[1].split('/')[1];
@@ -15826,6 +15829,7 @@ module.exports = function(context) {
                     if (err) return cb(err);
                     return source.github.loadRaw(parts, meta.sha, context, function(err, file) {
                         try {
+                            console.log(file)
                             return cb(err, xtend(meta, { content: JSON.parse(file) }));
                         } catch(e) {
                             // this was not a github file
@@ -15865,12 +15869,13 @@ module.exports = function(context) {
                 break;
             case 'blob':
                 login = d[0].login;
+                console.log(d)
                 repo = d[1].name;
                 branch = d[2].name;
                 path = d.slice(3).map(function(p) {
                     return p.path;
                 }).join('/');
-
+                console.log(d.path);
                 data.set({
                     type: 'github',
                     source: d,
@@ -15878,7 +15883,7 @@ module.exports = function(context) {
                         login: login,
                         repo: repo,
                         branch: branch,
-                        name: d.path
+                        name: path
                     },
                     path: path,
                     route: 'github:' + [
@@ -15897,7 +15902,11 @@ module.exports = function(context) {
                         path
                     ].join('/')
                 });
-                if (d.content) data.set({ map: d.content });
+                console.log(d)
+                if (d.content) {
+                    console.log(d.content)
+                    data.set({ map: d.content });
+                }
                 break;
             case 'file':
                 chunked = d.html_url.split('/');
@@ -15930,7 +15939,7 @@ module.exports = function(context) {
             case 'gist':
                 login = (d.owner && d.owner.login) || 'anonymous';
                 path = [login, d.id].join('/');
-
+                // context.data.get('route');
                 if (d.content) data.set({ map: d.content });
                 data.set({
                     type: 'gist',
@@ -16032,7 +16041,7 @@ module.exports = function(context) {
 
     return function(query) {
         if (!query.id && !query.data) return;
-
+        console.log(query);
         var oldRoute = d3.event ? qs.stringQs(d3.event.oldURL.split('#')[1]).id :
             context.data.get('route');
 
@@ -17736,7 +17745,7 @@ module.exports = function(context) {
         }];
         L.control.layers({},{
             'Cities': L.mapbox.tileLayer('atlregional.7gvw8kt9'),
-            'LCI Areas': L.mapbox.tileLayer('atlregional.o3hj8aor')
+            'LCI Areas': L.mapbox.tileLayer('atlregional.g4jnstt9')
         }).addTo(context.map);
         var layerSwap = function(d) {
             var clicked = this instanceof d3.selection ? this.node() : this;
@@ -18071,7 +18080,7 @@ module.exports = function(context, pane) {
             buttons.classed('active', function(_) { return d.icon == _.icon; });
             if (mode) mode.off();
             mode = d.behavior(context);
-            console.log(mode)
+            // console.log(mode)
             pane.call(mode);
         }
     };

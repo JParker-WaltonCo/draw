@@ -62,7 +62,7 @@ module.exports = function(context) {
 
     return function(query) {
         if (!query.id && !query.data) return;
-
+        console.log(query);
         var oldRoute = d3.event ? qs.stringQs(d3.event.oldURL.split('#')[1]).id :
             context.data.get('route');
 

@@ -45,7 +45,7 @@ module.exports = function(context, pane) {
             buttons.classed('active', function(_) { return d.icon == _.icon; });
             if (mode) mode.off();
             mode = d.behavior(context);
-            console.log(mode)
+            // console.log(mode)
             pane.call(mode);
         }
     };
