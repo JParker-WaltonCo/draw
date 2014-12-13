@@ -153,6 +153,7 @@ module.exports = function(context) {
     };
 
     data.parse = function(d, browser) {
+        var endpoint = config.GithubAPI || 'https://github.com/';
         var login,
             repo,
             branch,
@@ -202,7 +203,7 @@ module.exports = function(context) {
                         path
                     ].join('/'),
                     url: [
-                        'https://github.com',
+                        endpoint,
                         login,
                         repo,
                         'blob',

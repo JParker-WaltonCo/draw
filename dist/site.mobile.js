@@ -21588,13 +21588,14 @@ function extend() {
 },{}],142:[function(require,module,exports){
 module.exports = function(hostname) { 			
 	var production = (hostname === 'geojson.io'); 			
+ 			
 	return { 			
 		MapboxAPITile: null, 			
-		client_id: production ? 			
-			'62c753fd0faf18392d85' : 			
-			'bb7bbe70bd1f707125bc', 			
-		gatekeeper_url: production ? 			
-			'https://geojsonioauth.herokuapp.com' : 			
+		client_id: production ? 		
+			'62c753fd0faf18392d85' : 		
+			'bb7bbe70bd1f707125bc', 		
+		gatekeeper_url: production ? 		
+			'https://geojsonioauth.herokuapp.com' : 		
 			'https://localhostauth.herokuapp.com' 			
 	}; 		
 };
@@ -22092,8 +22093,9 @@ module.exports = function(context) {
             callback(null, cached.data);
         } else {
             context.storage.remove('github_user_details');
+            var endpoint = !!config.GithubAPI ? config.GithubAPI + '/api/v3' : 'https://api.github.com';
 
-            d3.json('https://api.github.com/user')
+            d3.json(endpoint + '/user')
                 .header('Authorization', 'token ' + context.storage.get('github_token'))
                 .on('load', onload)
                 .on('error', onerror)
@@ -22122,7 +22124,7 @@ module.exports = function(context) {
     };
 
     user.authenticate = function() {
-        window.location.href = 'https://github.com/login/oauth/authorize?client_id=' +
+        window.location.href = (config.GithubAPI || 'https://github.com') + '/login/oauth/authorize?client_id=' +
             config.client_id +
             '&scope=gist,repo';
     };
@@ -22736,13 +22738,15 @@ module.exports = function(context) {
 var fs = require('fs'),
     tmpl = "<!DOCTYPE html>\n<html>\n<head>\n  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />\n  <style>\n  body { margin:0; padding:0; }\n  #map { position:absolute; top:0; bottom:0; width:100%; }\n  .marker-properties {\n    border-collapse:collapse;\n    font-size:11px;\n    border:1px solid #eee;\n    margin:0;\n}\n.marker-properties th {\n    white-space:nowrap;\n    border:1px solid #eee;\n    padding:5px 10px;\n}\n.marker-properties td {\n    border:1px solid #eee;\n    padding:5px 10px;\n}\n.marker-properties tr:last-child td,\n.marker-properties tr:last-child th {\n    border-bottom:none;\n}\n.marker-properties tr:nth-child(even) th,\n.marker-properties tr:nth-child(even) td {\n    background-color:#f7f7f7;\n}\n  </style>\n  <script src='../lib/mapbox.js/latest/mapbox.js'></script>\n  <script src='../lib/jquery-1.10.2.min.js' ></script>\n  <link href='../lib/mapbox.js/latest/mapbox.css' rel='stylesheet' />\n</head>\n<body>\n<div id='map'></div>\n<script type='text/javascript'>\nvar map = L.mapbox.map('map');\n\nL.mapbox.tileLayer('tmcw.map-ajwqaq7t', {\n    retinaVersion: 'tmcw.map-u8vb5w83',\n    detectRetina: true\n}).addTo(map);\n\n$.getJSON('map.geojson', function(geojson) {\n    var geojsonLayer = L.geoJson(geojson).addTo(map);\n    var bounds = geojsonLayer.getBounds();\n    if (bounds.isValid()) {\n        map.fitBounds(geojsonLayer.getBounds());\n    } else {\n        map.setView([0, 0], 2);\n    }\n    geojsonLayer.eachLayer(function(l) {\n        showProperties(l);\n    });\n});\n\nfunction showProperties(l) {\n    var properties = l.toGeoJSON().properties, table = '';\n    for (var key in properties) {\n        table += '<tr><th>' + key + '</th>' +\n            '<td>' + properties[key] + '</td></tr>';\n    }\n    if (table) l.bindPopup('<table class=\"marker-properties display\">' + table + '</table>');\n}\n</script>\n</body>\n</html>\n";
 
+var config = require('../config.js')(location.hostname);
+
 module.exports.save = save;
 module.exports.saveBlocks = saveBlocks;
 module.exports.load = load;
 module.exports.loadRaw = loadRaw;
 
 function saveBlocks(content, callback) {
-    var endpoint = 'https://api.github.com/gists';
+    var endpoint = !!config.GithubAPI ? config.GithubAPI + '/api/v3/gists': 'https://api.github.com/gists';
 
     d3.json(endpoint)
         .on('load', function(data) {
@@ -22780,22 +22784,20 @@ function save(context, callback) {
     context.user.details(onuser);
 
     function onuser(err, user) {
-        var endpoint,
-            method = 'POST',
+        var method = 'POST',
             source = context.data.get('source'),
             files = {};
+        var endpoint = !!config.GithubAPI ? config.GithubAPI + '/api/v3/gists': 'https://api.github.com/gists';
 
         if (!err && user && user.login && meta &&
             // check that it's not previously a github
             source && source.id &&
             // and it is mine
             meta.login && user.login === meta.login) {
-            endpoint = 'https://api.github.com/gists/' + source.id;
+            endpoint =+ source.id;
             method = 'PATCH';
         } else if (!err && source && source.id) {
-            endpoint = 'https://api.github.com/gists/' + source.id + '/forks';
-        } else {
-            endpoint = 'https://api.github.com/gists';
+            endpoint += source.id + '/forks';
         }
 
         files[name] = {
@@ -22827,7 +22829,8 @@ function save(context, callback) {
 }
 
 function load(id, context, callback) {
-    context.user.signXHR(d3.json('https://api.github.com/gists/' + id))
+    var endpoint = !!config.GithubAPI ? config.GithubAPI + '/api/v3/gists': 'https://api.github.com/gists';
+    context.user.signXHR(d3.json(endpoint + id))
         .on('load', onLoad)
         .on('error', onError)
         .get();
@@ -22846,10 +22849,12 @@ function loadRaw(url, context, callback) {
     function onError(err) { callback(err, null); }
 }
 
-},{"fs":1}],160:[function(require,module,exports){
+},{"../config.js":142,"fs":1}],160:[function(require,module,exports){
 module.exports.save = save;
 module.exports.load = load;
 module.exports.loadRaw = loadRaw;
+
+var config = require('../config.js')(location.hostname);
 
 function save(context, callback) {
     var source = context.data.get('source'),
@@ -22898,7 +22903,7 @@ function save(context, callback) {
                 data.sha = source.sha;
             }
         } else {
-            endpoint = 'https://api.github.com/gists';
+            endpoint = !!config.GithubAPI ? config.GithubAPI + '/api/v3/gists' : 'https://api.github.com/gists';
             files[name] = { content: JSON.stringify(map, null, 2) };
             data = { files: files };
         }
@@ -22961,7 +22966,8 @@ function loadRaw(parts, sha, context, callback) {
 }
 
 function fileUrl(parts) {
-    return 'https://api.github.com/repos/' +
+    var endpoint = !!config.GithubAPI ? config.GithubAPI + '/api/v3/gists': 'https://api.github.com/gists';
+    return endpoint +
         parts.user +
         '/' + parts.repo +
         '/contents/' + parts.path +
@@ -22969,13 +22975,14 @@ function fileUrl(parts) {
 }
 
 function shaUrl(parts, sha) {
-    return 'https://api.github.com/repos/' +
+    var endpoint = !!config.GithubAPI ? config.GithubAPI + '/api/v3/gists': 'https://api.github.com/gists';
+    return endpoint +
         parts.user +
         '/' + parts.repo +
         '/git/blobs/' + sha;
 }
 
-},{}],161:[function(require,module,exports){
+},{"../config.js":142}],161:[function(require,module,exports){
 try {
     var fs = require('fs');
 } catch(e) { }
@@ -23155,6 +23162,7 @@ module.exports = function fileBar(context) {
 
     var shpSupport = typeof ArrayBuffer !== 'undefined';
     var mapboxAPI = !config.MapboxAPITile || /(?:http:\/\/)?a\.tiles\.mapbox\.com\/?/.test(config.MapboxAPITile) ? true : false;
+    var githubAPI = !!config.GithubAPI;
 
     var exportFormats = [{
         title: 'GeoJSON',
@@ -23226,7 +23234,7 @@ module.exports = function fileBar(context) {
             ]
         }];
 
-        if (mapboxAPI) {
+        if (mapboxAPI && githubAPI) {
             actions.unshift({
                 title: 'Open',
                 children: [
@@ -23301,7 +23309,7 @@ module.exports = function fileBar(context) {
         var name = selection.append('div')
             .attr('class', 'name');
 
-        if (mapboxAPI) {
+        if (mapboxAPI || githubAPI) {
             var filetype = name.append('a')
                 .attr('target', '_blank')
                 .attr('class', 'icon-file-alt');
@@ -23465,10 +23473,10 @@ module.exports = function fileBar(context) {
             var data = d.obj,
                 type = data.type,
                 path = data.path;
-            if (mapboxAPI) filename
+            if (mapboxAPI || githubAPI) filename
                 .text(path ? path : 'unsaved')
                 .classed('deemphasize', context.data.dirty);
-            if (mapboxAPI) filetype
+            if (mapboxAPI || githubAPI) filetype
                 .attr('href', data.url)
                 .attr('class', sourceIcon(type));
             saveNoun(type == 'github' ? 'Commit' : 'Save');
@@ -24106,9 +24114,10 @@ function share(context) {
 },{"../source/gist":159,"./modal":169}],173:[function(require,module,exports){
 var config = require('../config.js')(location.hostname);
 var mapboxAPI = !config.MapboxAPITile || /(?:http:\/\/)?a\.tiles\.mapbox\.com\/?/.test(config.MapboxAPITile) ? true : false;
+var githubAPI = !!config.GithubAPI;
 
 module.exports = function(context) {
-    if (mapboxAPI) {
+    if (mapboxAPI || githubAPI) {
         return function(selection) {
             var name = selection.append('a')
                 .attr('target', '_blank');
