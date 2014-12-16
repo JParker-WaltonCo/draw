@@ -248,8 +248,12 @@ module.exports = function fileBar(context) {
                         return alert('only GeoJSON files are supported from GitHub');
                     }
                     if (last.type === 'blob') {
-                        context.data.parse(d);
-                        m.close();
+                        githubBrowser.request('/repos/' + d[1].full_name +
+                            '/git/blobs/' + last.sha, function(err, blob) {
+                                d.content = JSON.parse(atob(blob[0].content));
+                                context.data.parse(d);
+                                m.close();
+                            });
                     }
                 })
                 .appendTo(
