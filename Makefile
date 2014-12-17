@@ -62,6 +62,7 @@ MapboxAPITile=$$(node -pe "var fs = require('fs'); JSON.parse(fs.readFileSync('.
 GithubAPI=$$(node -pe "var fs = require('fs'); JSON.parse(fs.readFileSync('./settings.json')).GithubAPI.replace(/\/$$/, '') || '';")
 GithubClientID=$$(node -pe "var fs = require('fs'); JSON.parse(fs.readFileSync('./settings.json')).GithubClientID.replace(/\/$$/, '') || '';")
 GatekeeperURL=$$(node -pe "var fs = require('fs'); JSON.parse(fs.readFileSync('./settings.json')).GatekeeperURL.replace(/\/$$/, '') || '';")
+access_token=$$(node -pe "var fs = require('fs'); JSON.parse(fs.readFileSync('./settings.json')).access_token || '';")
 
 lib/mapbox.js/latest/mapbox.js: settings.json
 	$(BROWSERIFY) node_modules/mapbox.js > lib/mapbox.js/latest/mapbox.js
@@ -77,7 +78,6 @@ lib/mapbox.js/latest/mapbox.js: settings.json
 		echo "Github Client ID:" $(GithubClientID); \
 		echo "Gatekeeper Url:" $(GatekeeperURL); \
 	else \
-		echo 'what'; \
 		GithubAPIConfig="\n\t\tclient_id: production ? \
 			\n\t\t\t'62c753fd0faf18392d85' : \
 			\n\t\t\t'bb7bbe70bd1f707125bc', \
@@ -86,12 +86,12 @@ lib/mapbox.js/latest/mapbox.js: settings.json
 			\n\t\t\t'https://localhostauth.herokuapp.com'"; \
 	fi && \
 	echo "module.exports = function(hostname) { \
-			\n\tvar production = (hostname === 'geojson.io'); \
-			\n \
-			\n\treturn { \
-			$$GithubAPIConfig \
-			\n\t}; \
-		\n};" > src/config.js && \
+		\n\tvar production = (hostname === 'geojson.io'); \
+		\n \
+		\n\treturn { \
+		$$GithubAPIConfig \
+		\n\t}; \
+	\n};" > src/config.js && \
 	if [ $(MapboxAPITile) ]; then \
 		API=$$(node -pe "if (process.argv[1]) JSON.parse(process.argv[1]).api; else console.log('\WARNING: Cannot find MapboxAPITile endpoint at \'$(MapboxAPITile)\'.\n');" "$$(curl -s $(MapboxAPITile))") && \
 		echo "Mapbox API:" $$API && \
@@ -99,9 +99,11 @@ lib/mapbox.js/latest/mapbox.js: settings.json
 		touch dist/lib.js; \
 		echo "\nL.mapbox.config.HTTP_URL = '$(MapboxAPITile)/v4'; \
 		 \nL.mapbox.config.HTTPS_URL = '$(MapboxAPITile)/v4'; \
-		 \nL.mapbox.config.REQUIRE_ACCESS_TOKEN = false;" >> lib/mapbox.js/latest/mapbox.js; \
+		 \nL.mapbox.config.REQUIRE_ACCESS_TOKEN = false; \
+		 \nL.mapbox.accessToken = '$(access_token)';" >> lib/mapbox.js/latest/mapbox.js; \
 		 touch dist/lib.js; \
 	else \
+		echo "\nL.mapbox.accessToken = '$(access_token)';" >> lib/mapbox.js/latest/mapbox.js; \
 		touch dist/lib.js; \
 	fi
 

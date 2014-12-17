@@ -247,7 +247,11 @@ module.exports = function(context) {
 
                 var name = mapFile(d);
 
-                if (d.files[name].content) data.set({ map: JSON.parse(d.files[name].content) });
+                try {
+                    if (d.files[name].content) data.set({ map: JSON.parse(d.files[name].content) });
+                } catch (e) {
+                    alert('Invalid JSON');
+                }
                 data.set({
                     type: 'gist',
                     source: d,
