@@ -25217,7 +25217,10 @@ module.exports = function(context) {
         }
         L.control.layers({},{
             'Cities': L.mapbox.tileLayer('atlregional.7gvw8kt9'),
-            'LCI Areas': L.mapbox.tileLayer('atlregional.g4jnstt9')
+            'LCI Areas': L.mapbox.tileLayer('atlregional.g4jnstt9'),
+            // 'NHS': L.mapbox.tileLayer('atlregional.b5ac8dd2'),
+            // 'Truck Routes': L.mapbox.tileLayer('atlregional.baa80cee'),
+            'Priority Networks (NHS - Green; Trucks - Red; Concept 3 - Blue)': L.mapbox.tileLayer('atlregional.2b595b3d')
         }).addTo(context.map);
         // layers.push({
         //     title: 'Cities',
