@@ -1,5 +1,6 @@
-var clone = require('clone');
-    xtend = require('xtend');
+var clone = require('clone'),
+    xtend = require('xtend'),
+    config = require('../config.js')(location.hostname),
     source = {
         gist: require('../source/gist'),
         github: require('../source/github'),
