@@ -8,16 +8,17 @@ module.exports = function(context, pane) {
         var mode = null;
 
         var buttonData = [{
-            icon: 'code',
-            title: ' JSON',
-            alt: 'JSON Source',
-            behavior: json
-        }, {
             icon: 'table',
             title: ' Table',
             alt: 'Edit feature properties in a table',
             behavior: table
         }, {
+            icon: 'code',
+            title: ' JSON',
+            alt: 'JSON Source',
+            behavior: json
+        }, {
+            
             icon: 'question',
             title: ' Help',
             alt: 'Help',

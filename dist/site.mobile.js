@@ -23114,10 +23114,10 @@ function extend() {
 module.exports = function(hostname) {
     // Settings for geojson.io
     L.mapbox.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6IlpIdEpjOHcifQ.Cldl4wq_T5KOgxhLvbjE-w';
-    if (hostname === 'geojson.io') {
+    if (hostname === 'atlregional.github.io') {
         return {
-            client_id: '62c753fd0faf18392d85',
-            gatekeeper_url: 'https://geojsonioauth.herokuapp.com',
+            client_id: '7daf56800845b70fcd18',
+            gatekeeper_url: 'http://gatekeeper-draw.herokuapp.com',
         };
     // Customize these settings for your own development/deployment
     // version of geojson.io.
@@ -24281,7 +24281,7 @@ module.exports = function(context) {
 
 },{"../lib/smartzoom.js":154,"d3-metatable":17}],161:[function(require,module,exports){
 var fs = require('fs'),
-    tmpl = "<!DOCTYPE html>\n<html>\n<head>\n  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />\n  <style>\n  body { margin:0; padding:0; }\n  #map { position:absolute; top:0; bottom:0; width:100%; }\n  .marker-properties {\n    border-collapse:collapse;\n    font-size:11px;\n    border:1px solid #eee;\n    margin:0;\n}\n.marker-properties th {\n    white-space:nowrap;\n    border:1px solid #eee;\n    padding:5px 10px;\n}\n.marker-properties td {\n    border:1px solid #eee;\n    padding:5px 10px;\n}\n.marker-properties tr:last-child td,\n.marker-properties tr:last-child th {\n    border-bottom:none;\n}\n.marker-properties tr:nth-child(even) th,\n.marker-properties tr:nth-child(even) td {\n    background-color:#f7f7f7;\n}\n  </style>\n  <script src='../lib/mapbox.js/latest/mapbox.js'></script>\n  <script src='../lib/jquery-1.10.2.min.js' ></script>\n  <link href='../lib/mapbox.js/latest/mapbox.css' rel='stylesheet' />\n</head>\n<body>\n<div id='map'></div>\n<script type='text/javascript'>\nvar map = L.mapbox.map('map');\n\nL.mapbox.tileLayer('tmcw.map-ajwqaq7t', {\n    retinaVersion: 'tmcw.map-u8vb5w83',\n    detectRetina: true\n}).addTo(map);\n\n$.getJSON('map.geojson', function(geojson) {\n    var geojsonLayer = L.geoJson(geojson).addTo(map);\n    var bounds = geojsonLayer.getBounds();\n    if (bounds.isValid()) {\n        map.fitBounds(geojsonLayer.getBounds());\n    } else {\n        map.setView([0, 0], 2);\n    }\n    geojsonLayer.eachLayer(function(l) {\n        showProperties(l);\n    });\n});\n\nfunction showProperties(l) {\n    var properties = l.toGeoJSON().properties, table = '';\n    for (var key in properties) {\n        table += '<tr><th>' + key + '</th>' +\n            '<td>' + properties[key] + '</td></tr>';\n    }\n    if (table) l.bindPopup('<table class=\"marker-properties display\">' + table + '</table>');\n}\n</script>\n</body>\n</html>\n";
+    tmpl = "<!DOCTYPE html>\n<html>\n<head>\n  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />\n  <style>\n  body { margin:0; padding:0; }\n  #map { position:absolute; top:0; bottom:0; width:100%; }\n  .marker-properties {\n    border-collapse:collapse;\n    font-size:11px;\n    border:1px solid #eee;\n    margin:0;\n}\n.marker-properties th {\n    white-space:nowrap;\n    border:1px solid #eee;\n    padding:5px 10px;\n}\n.marker-properties td {\n    border:1px solid #eee;\n    padding:5px 10px;\n}\n.marker-properties tr:last-child td,\n.marker-properties tr:last-child th {\n    border-bottom:none;\n}\n.marker-properties tr:nth-child(even) th,\n.marker-properties tr:nth-child(even) td {\n    background-color:#f7f7f7;\n}\n  </style>\n  <script src='../lib/mapbox.js/latest/mapbox.js'></script>\n  <script src='../lib/jquery-1.10.2.min.js' ></script>\n  <link href='../lib/mapbox.js/latest/mapbox.css' rel='stylesheet' />\n</head>\n<body>\n<div id='map'></div>\n<script type='text/javascript'>\nvar map = L.mapbox.map('map');\n\nL.mapbox.tileLayer('tmcw.map-ajwqaq7t', {\n    retinaVersion: 'tmcw.map-u8vb5w83',\n    detectRetina: true\n}).addTo(map);\n\n$.getJSON('map.geojson', function(geojson) {\n    var geojsonLayer = L.geoJson(geojson).addTo(map);\n    var bounds = geojsonLayer.getBounds();\n    if (bounds.isValid()) {\n        map.fitBounds(geojsonLayer.getBounds());\n    } else {\n        map.setView([33.9684201, -83.86962], 9);\n    }\n    geojsonLayer.eachLayer(function(l) {\n        showProperties(l);\n    });\n});\n\nfunction showProperties(l) {\n    var properties = l.toGeoJSON().properties, table = '';\n    for (var key in properties) {\n        table += '<tr><th>' + key + '</th>' +\n            '<td>' + properties[key] + '</td></tr>';\n    }\n    if (table) l.bindPopup('<table class=\"marker-properties display\">' + table + '</table>');\n}\n</script>\n</body>\n</html>\n";
 
 var config = require('../config.js')(location.hostname);
 var githubBase = config.GithubAPI ? config.GithubAPI + '/api/v3': 'https://api.github.com';
@@ -24511,7 +24511,7 @@ function loadRaw(parts, sha, context, callback) {
 }
 
 function fileUrl(parts) {
-    return githubBase + '/gists' +
+    return githubBase + '/repos/' +
         parts.user +
         '/' + parts.repo +
         '/contents/' + parts.path +
@@ -24519,7 +24519,7 @@ function fileUrl(parts) {
 }
 
 function shaUrl(parts, sha) {
-    return githubBase + '/gists' +
+    return githubBase + '/repos/' +
         parts.user +
         '/' + parts.repo +
         '/git/blobs/' + sha;
@@ -25206,7 +25206,18 @@ module.exports = function(context) {
                 })
             }];
         }
-
+        L.control.layers({},{
+            'Cities': L.mapbox.tileLayer('atlregional.7gvw8kt9'),
+            'LCI Areas': L.mapbox.tileLayer('atlregional.g4jnstt9')
+        }).addTo(context.map);
+        // layers.push({
+        //     title: 'Cities',
+        //     layer: L.mapbox.tileLayer('atlregional.7gvw8kt9')
+        // });
+        // layers.push({
+        //     title: 'LCI Areas',
+        //     layer: L.mapbox.tileLayer('atlregional.g4jnstt9')
+        // });
         var layerSwap = function(d) {
             var clicked = this instanceof d3.selection ? this.node() : this;
             layerButtons.classed('active', function() {
@@ -25252,7 +25263,7 @@ module.exports = function(context, readonly) {
                 infoControl: false,
                 attributionControl: true
             })
-            .setView([20, 0], 2)
+            .setView([33.8305,-84.2651], 9)
             .addControl(L.mapbox.geocoderControl('mapbox.places-permanent', {
                 position: 'topright'
             }));
@@ -25501,16 +25512,17 @@ module.exports = function(context, pane) {
         var mode = null;
 
         var buttonData = [{
-            icon: 'code',
-            title: ' JSON',
-            alt: 'JSON Source',
-            behavior: json
-        }, {
             icon: 'table',
             title: ' Table',
             alt: 'Edit feature properties in a table',
             behavior: table
         }, {
+            icon: 'code',
+            title: ' JSON',
+            alt: 'JSON Source',
+            behavior: json
+        }, {
+            
             icon: 'question',
             title: ' Help',
             alt: 'Help',

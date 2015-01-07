@@ -29,7 +29,18 @@ module.exports = function(context) {
                 })
             }];
         }
-
+        L.control.layers({},{
+            'Cities': L.mapbox.tileLayer('atlregional.7gvw8kt9'),
+            'LCI Areas': L.mapbox.tileLayer('atlregional.g4jnstt9')
+        }).addTo(context.map);
+        // layers.push({
+        //     title: 'Cities',
+        //     layer: L.mapbox.tileLayer('atlregional.7gvw8kt9')
+        // });
+        // layers.push({
+        //     title: 'LCI Areas',
+        //     layer: L.mapbox.tileLayer('atlregional.g4jnstt9')
+        // });
         var layerSwap = function(d) {
             var clicked = this instanceof d3.selection ? this.node() : this;
             layerButtons.classed('active', function() {
