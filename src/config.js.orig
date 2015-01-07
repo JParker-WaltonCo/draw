@@ -1,10 +1,23 @@
 module.exports = function(hostname) {
+<<<<<<< HEAD
+    var production = (hostname === 'geojson.io');
+
+    return {
+        client_id: production ?
+            '62c753fd0faf18392d85' :
+            'bb7bbe70bd1f707125bc',
+        gatekeeper_url: production ?
+            'https://geojsonioauth.herokuapp.com' :
+            'https://localhostauth.herokuapp.com'
+    };
+};
+=======
     // Settings for geojson.io
     L.mapbox.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6IlpIdEpjOHcifQ.Cldl4wq_T5KOgxhLvbjE-w';
-    if (hostname === 'atlregional.github.io') {
+    if (hostname === 'geojson.io') {
         return {
-            client_id: '7daf56800845b70fcd18',
-            gatekeeper_url: 'http://gatekeeper-draw.herokuapp.com',
+            client_id: '62c753fd0faf18392d85',
+            gatekeeper_url: 'https://geojsonioauth.herokuapp.com',
         };
     // Customize these settings for your own development/deployment
     // version of geojson.io.
@@ -20,3 +33,4 @@ module.exports = function(hostname) {
         };
     }
 };
+>>>>>>> 56a60d66083aa6fef561b79f48383e1741ef3105
